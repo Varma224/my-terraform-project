@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.region_name
+  region = var.reg_name
 }
 
 resource "aws_vpc" "main" {
@@ -8,7 +8,7 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
 
   tags = {
-    Name    = var.vpc_tag
+    Name    = var.vpc_tags
     Service = "Terraform"
   }
 }
@@ -24,6 +24,7 @@ resource "aws_subnet" "public" {
     Service = "Terraform"
   }
 }
+
 
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
@@ -52,6 +53,7 @@ resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
 }
+
 
 resource "aws_security_group" "allow_all" {
   vpc_id = aws_vpc.main.id
@@ -86,8 +88,9 @@ resource "aws_security_group" "allow_all" {
   }
 }
 
+
 resource "aws_instance" "web-1" {
-  ami                         = "ami-0866a3c8686eaeeba"
+  ami                         = var.ec2_ami
   availability_zone           = var.ec2_az
   instance_type               = var.ec2_type
   key_name                    = var.key_name
@@ -95,9 +98,9 @@ resource "aws_instance" "web-1" {
   vpc_security_group_ids      = ["${aws_security_group.allow_all.id}"]
   associate_public_ip_address = true
   tags = {
-    Name       = "Prod-Server"
+    Name       = var.ec2_tag
     Env        = "Prod"
-    Owner      = "sai"
-    CostCenter = "ABCD"
+    Owner      = "Avarma"
+    CostCenter = "123"
   }
 }
